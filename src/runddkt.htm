@@ -1,0 +1,1450 @@
+<SCRIPT>
+/* Amendments Ernie Warren. 27-June-2001 */
+/* 1) Added DHTML layers for question images */
+/* 2) Amended logic and button positioning to include next question after triggering OK event */
+/* 3) Adjusted HTML layout to suit latest version */
+
+/* Browser sensing */
+/* Set up boolean variables to record the browser type */
+var isNS4 = 0;
+var isNS3 = 0;
+var isIE4 = 0;
+var isIE3 = 0;
+var isNew = 0;
+
+// Set up other variables
+var docObj;
+var styleObj;
+var topVal;
+
+
+/* Determines the browser name and browser version */
+var brow = ((navigator.appName) + (parseInt(navigator.appVersion)));
+
+/* reassign variable depending on the browser */
+if (brow == "Netscape4") 
+{isNS4 = 1;}
+	else if (brow == "Netscape3") 
+	{isNS3 = 1;}
+		else if (brow == "Microsoft Internet Explorer4") 
+		{isIE4 = 1;}
+			else if (brow == "Microsoft Internet Explorer3") 
+			{isIE3 = 1;}
+				else 
+				{isNew = 1;}
+				
+// initalizes our Generic DOM based on the browser
+if (isNS4||isIE4){
+	docObj = (isNS4) ? 'document' : 'document.all';
+	styleObj = (isNS4) ? '' : '.style';
+	}
+
+
+
+var currTop ='elem0';
+var textquestionnumber = "";
+
+
+
+function shuffle(newTop,mTop,mLeft,mDisplay) {
+	if (isNS4||isIE4||isNew){
+	domTop = eval(docObj +  '.' + currTop + styleObj);
+	domNew = eval(docObj +  '.' + newTop + styleObj);
+
+	domTop.zIndex = "0";
+	domTop.visibility = "hidden";
+	domNew.zIndex = "100";
+	domNew.top = mTop;
+	domNew.left = mLeft;
+	domNew.visibility = mDisplay;
+	currTop = newTop;
+	}
+
+}
+
+</SCRIPT>
+
+<STYLE TYPE="text/css">
+
+	#elem0 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem1 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem2 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem3 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem4 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem5 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem6 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem7 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem8 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem9 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem10 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem11 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem12 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem13 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem14 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem15 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem16 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem17 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem18 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem19 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem20 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+	#elem21 {position: absolute; top: 123px; left: 225px; z-index: 0; visibility: hidden;}
+		
+	#elemlast { position: absolute; top:   0px; left: 0px; z-index: 0;}
+	
+		
+	#changeimagemenuposition {position: absolute; top: 480px; left:50px; z-index: 1; visibility: visible;}
+</STYLE>
+<script language="JavaScript">
+
+// Toggle control buttons  Ernie Warren  Last Updated 15-June-2001
+
+// This code works as follows:
+// We let program display the buttons in their three positions based on the rules for each question.
+// Buttons may be hidden or displayed in any fashion and more than as this code is independant of the decison
+// logic.
+// After the buttons are displayed then onmouseover/onmouseout invokes an event handler
+// for each of the three button positions irrespective of whether the button is displayed
+// or not or what type of button is displayed at each position.
+// seeexitbutton/out(); for the left button position
+// seeskipbutton/out(); for the middle button position
+// seeokornextbutton/out(); for the right button position
+// Each event handler tests whether the button image to toggle exists at its position
+// then toggles the image as appropriate
+// The exception conditions are 'do nothing' for spacer.gif, tryagain.gif
+// Next and OK buttons in the right position are handled by seeokornextbutton/out();
+
+
+// define string variables to test for buttons we can see
+var seeexitqbutton;
+var seeskipqbutton;
+var seeokqbutton;
+var seenextqbutton;
+var seelastquestionpic;
+
+// Define flags for buttons we can see
+// -1 means we can't see the button
+// > -1 means we can see the button
+var iseeexitqbutton;
+var iseeskipqbutton;
+var iseeokqbutton;
+var iseenextqbutton;
+var iseelastquestionpic;
+
+
+// Initialise string variables to null
+
+seeexitqbutton = "";
+seeskipqbutton = "";
+seeokqbutton = "";
+seenextqbutton = "";
+seelastquestionpic = "";
+
+
+// Initialise flags to 'we can't see you' state
+iseeexitqbutton = -1;
+iseeskipqbutton = -1;
+iseeokqbutton = -1;
+iseenextqbutton = -1;
+iseelastquestionpic = -1;
+
+
+// toggle exit button but only if we can see it
+function seeexitbutton() {
+seeexitqbutton = document.exitPic.src;
+iseeexitqbutton = seeexitqbutton.indexOf("exit.gif");
+	if (iseeexitqbutton > -1) {
+	document.exitPic.src = "exit_button_down_en.gif";
+	} 
+	else {
+	}
+
+}
+
+// toggle exit button but only if we can see it
+function seeexitbuttonout() {
+seeexitqbutton = document.exitPic.src;
+
+iseeexitqbutton = seeexitqbutton.indexOf("exit_button_down_en.gif");
+	if (iseeexitqbutton > -1) {
+	document.exitPic.src = "exit.gif";
+	} 
+	else {
+	}
+}
+
+
+// toggle skip button but only if we can see it
+function seeskipornextbutton() {
+seeskipqbutton = document.skipPic.src;
+iseeskipqbutton = seeskipqbutton.indexOf("skip.gif");
+	if (iseeskipqbutton > -1) {
+	document.skipPic.src = "skip_button_down_en.gif";
+	} 
+	else {
+	}
+
+		// toggle next button but only if we can see it
+	seenextqbutton = document.skipPic.src;
+	iseenextqbutton = seenextqbutton.indexOf("next");
+	
+	if (iseenextqbutton > -1) {
+	document.skipPic.src = "next_button_down_en.gif";
+	} 
+	else {
+	}
+}
+
+
+// toggle skip button but only if we can see it
+function seeskipornextbuttonout() {
+	seeskipqbutton = document.skipPic.src;
+
+	iseeskipqbutton = seeskipqbutton.indexOf("skip_button_down_en.gif");
+	if (iseeskipqbutton > -1) {
+	document.skipPic.src = "skip.gif";
+	} 
+	else {
+	}
+	
+	
+		// toggle next button if we can see it
+	seenextqbutton = document.skipPic.src;
+	iseenextqbutton = seenextqbutton.indexOf("next_button_down_en.gif");
+	if (iseenextqbutton > -1) {
+	document.skipPic.src = "next.gif";
+	} 
+	else {
+	}
+	
+
+}
+
+
+
+
+//  toggle ok button but only if we can see it
+function seeokbutton() {
+seeokqbutton = document.okayPic.src;
+iseeokqbutton = seeokqbutton.indexOf("okay.gif");
+	if (iseeokqbutton > -1) {
+	document.okayPic.src = "ok_button_down_en.gif";
+	} 
+	else {
+	}
+}
+
+//  toggle ok button but only if we can see it
+function seeokbuttonout() {
+seeokqbutton = document.okayPic.src;
+iseeokqbutton = seeokqbutton.indexOf("ok_button_down_en.gif");
+	if (iseeokqbutton > -1) {
+	document.okayPic.src = "okay.gif";
+	} 
+	else {
+	}
+
+
+
+}
+
+</script>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+
+////////////////////////////////////////////////////////////////////////////
+// This Demonstration Driver Knowledge Test was developed by Lee Borkman
+// for the Roads and Traffic Authority of New South Wales.
+//
+// No part of the code may be duplicated or modified without the consent
+// of the Roads and Traffic Authority of New South Wales.
+//
+// Email: Lee_Borkman@rta.nsw.gov.au
+//
+// © Roads and Traffic Authority (NSW), 1999
+////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////
+	function runDDKT() {
+	//  The main program
+	
+		initGlobalVars();
+		
+		initQuestionsAndLists();
+
+		// Load the first chunk of immediately needed common images
+		add("noselect.gif");
+		add("exit.gif");
+		add("outof.gif");
+		add("tryagain.gif");
+		add("next_button_down_en.gif");
+		add("skip_button_down_en.gif");
+		add("ok_button_down_en.gif");
+		add("exit_button_down_en.gif");
+
+		// Load the images for the first (zero) question
+		fetchQuestion(0);
+		add("0.gif");
+
+		// Load the rest of the common images
+		add("outof.gif");
+		add("okay.gif");
+		add("selected.gif");
+		add("grey_button_down.gif");
+		add("correct.gif");
+		add("wrong.gif");
+		add("arrow.gif");
+		add("question.gif");
+		add("next.gif");
+		add("skip.gif");
+		add("cartest.gif");
+		add("score.gif");
+		add("qstnlbl.gif");
+		add("heading.gif");
+		add("spacer.gif");
+		add("proceed.gif");
+
+
+		//  Start with question zero
+		currentList=0;
+		skippedList = [];
+		randomList = lists[0];
+		currentQuestionInList=0;
+
+		//  Allow extra time (extra 30 secs) due to loading common images
+		displayQuestion(-60);
+
+
+	}	
+
+////////////////////////////////////////////////////////////////////////////
+	function initGlobalVars() {
+	
+		// How many questions?
+		LastQuestion = 21;
+		
+		// How many Lists of questions?
+		LastList = 5;
+		
+		// How many subtests?
+		LastSubTest = 11;
+		
+		// Array to hold all dynamic images
+		graphics = new Array();
+		
+		// Array to hold question objects
+		question = new Array();
+
+		// Array to accumulate questions that have been skipped
+		skippedList = new Array();
+
+		// Array to hold the subtest question lists
+		lists = new Array();
+
+		// Array to hold a copy of the current list for processing
+		randomList = new Array();
+		
+		// Array to hold the width of each picture image for x-position calculations
+		
+		picxposition = new Array();
+		picxposition[0] = 146;  // invisible spacer.gif
+		picxposition[1] = 229;  // width of picture pic1.gif
+		picxposition[2] = 128;  // width of picture pic2.gif
+		picxposition[3] = 146;  // invisible spacer.gif
+		picxposition[4] = 146;  // invisible spacer.gif
+		picxposition[5] = 146;  // invisible spacer.gif
+		picxposition[6] = 146;  // invisible spacer.gif
+		picxposition[7] = 146;  // invisible spacer.gif
+		picxposition[8] = 111;  // width of picture pic8.gif
+		picxposition[9] = 146;  // invisible spacer.gif
+		picxposition[10] = 165; // width of picture pic10.gif
+		picxposition[11] = 90;  // width of picture pic11.gif
+		picxposition[12] = 146; // invisible spacer.gif
+		picxposition[13] = 146; // invisible spacer.gif
+		picxposition[14] = 146; // invisible spacer.gif
+		picxposition[15] = 208; // width of picture pic15.gif
+		picxposition[16] = 101; // width of picture pic16.gif
+		picxposition[17] = 145; // width of picture pic17.gif
+		picxposition[18] = 146; // width of picture pic18.gif
+		picxposition[19] = 146; // width of picture pic19.gif
+		picxposition[20] = 146;  // width of picture pic20.gif
+		picxposition[21] = 146; // invisible spacer.gif
+		
+		
+		
+
+		// Three arrays used to randomise the order in which
+		// multiple choice options are displayed
+		optionList = new Array(0,1,2);
+		randomOptionList = new Array();
+		threeLetterList = new Array('a','b','c');
+		
+		// What is this question's position within the DDKT?
+		questionOutOf20LoopIndex = 0;
+
+	 	// The current question
+		q = 0;
+
+		// Total score and total number attempted
+		// ... ignores the RepeatUntilCorrect questions
+		totalAttempted = 0;
+		score = 0;
+		 
+		// Subtest scores and subtest number attempted
+		testScore = new Array();
+		testOutOf = new Array();
+		for (var i=0;i<=LastSubTest;i++) {
+		 	testScore[i] = 0;
+		 	testOutOf[i] = 0;
+		}
+		
+		// State variables
+		selectedNum = 4; // This NOT really a valid selection
+		selectedYet = false;
+		betweenQuestions = true;
+		proceeding = false;
+		skipable = false;
+		okayable = false;
+		exitable = false;
+		doingSkipped = false;
+		nohover = new Array();
+		nohover[0] = false;
+		nohover[1] = false;
+		nohover[2] = false;
+
+	}
+
+
+
+////////////////////////////////////////////////////////////////////////////
+	function initQuestionsAndLists() {
+		
+		// define 21 questions and set default values for attributes
+		for (var i=0;i<=LastQuestion;i++) {
+			question[i] = {
+				questionOutOf20: -1,
+				skipped: false,
+				subTestNum: 0,
+				repeatable: false
+			}
+		}
+		
+		// First ICAC question
+		question[0].subTestNum =  0;
+		question[0].skipped =  true;
+		question[0].repeatable = true
+			
+		// 6  x General Knowledge questions
+		question[1].subTestNum = 1;
+		question[2].subTestNum = 1;
+		question[3].subTestNum = 1;
+		question[4].subTestNum = 1;
+		question[5].subTestNum = 1;
+		question[6].subTestNum = 1;
+			
+		// 8 x Road Safety questions
+		question[7].subTestNum = 2;
+		question[8].subTestNum = 3;
+		question[9].subTestNum = 4;
+		question[10].subTestNum = 5;
+		question[11].subTestNum = 6;
+		question[12].subTestNum = 7;
+		question[13].subTestNum = 8;
+		question[14].subTestNum = 9;
+
+		// 6 x Road Signs questions
+		question[15].subTestNum = 10;
+		question[16].subTestNum = 10;
+		question[17].subTestNum = 10;
+		question[18].subTestNum = 11;
+		question[19].subTestNum = 11;
+		question[20].subTestNum = 11;
+
+		// Final ICAC question
+		question[21].subTestNum =  0;
+		question[21].skipped =  true;
+		question[21].repeatable = true
+			
+		// Define arrays for individual sublists
+		lists[0] = new Array();
+		lists[1] = new Array();
+		lists[2] = new Array();
+		lists[3] = new Array();
+		lists[4] = new Array();
+		lists[5] = new Array();
+	
+		// Define the questions for each individual sublist
+		lists[0] = [0];
+		lists[1] = [1,2,3,4,5,6];
+		lists[2] = [7,8,9,10,11,12,13,14];
+		lists[3] = [15,16,17];
+		lists[4] = [18,19,20];
+		lists[5] = [21];
+		
+		// Randomise the order of the two Traffic Signs subtests
+		if (Math.random() < 0.5) {
+			var tmpList = lists[3];
+			lists[3] = lists[4];
+			lists[4] = tmpList;
+		}
+		
+		//  Randomise the order of questions within each subtest
+		for (i=0;i<lists.length;i++) {
+			randomList = makeRandomList(lists[i]);
+			
+			// Make last question in each major subtest unskippable
+			if ((randomList.length != 0) && (i != 3)) {
+				question[randomList[randomList.length-1]].skipped = true;
+			}
+			lists[i] = randomList;
+		}
+		
+		// Build a master list with ALL questions in display order
+		// Use this list to preload the NEXT question's images
+		masterList = new Array();
+		masterList = masterList.concat(lists[0]);
+		masterList = masterList.concat(lists[1]);
+		masterList = masterList.concat(lists[2]);
+		masterList = masterList.concat(lists[3]);
+		masterList = masterList.concat(lists[4]);
+		masterList = masterList.concat(lists[5]);
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function add(img) {
+	// Preload one image into the graphics associative array
+		graphics[img] = new Image();
+		graphics[img].src = img;
+	}
+	
+	
+////////////////////////////////////////////////////////////////////////////
+	function fetchQuestion(x) {
+	// Preload all of the images for one question
+		add("ques" + x + ".gif");
+		
+		// preload pictures if any - need to test EW 
+		
+		add("pic" + x + ".gif");
+		
+		
+		add("ans"  + x + "a.gif");
+		//add("ans"  + x + "ah.gif");
+		add("ans"  + x + "b.gif");
+		//add("ans"  + x + "bh.gif");
+		add("ans"  + x + "c.gif");
+		//add("ans"  + x + "ch.gif");
+		add("test" + question[x].subTestNum + ".gif");
+		return;
+	}
+	
+
+////////////////////////////////////////////////////////////////////////////
+	function makeRandomList(source) {
+	// Takes a source list as parameter and returns a shuffled copy
+	
+		// How long is the source list
+		var loops = source.length;
+
+		// Make empty target array
+		var target = new Array();
+		target = [];
+
+		for (var i=0; i<loops; i++) {
+		// Repeat for the ORIGINAL length of the source array
+
+			// Get a random integer (r) between zero and the CURRENT length of the source list
+			var r = randInt(source.length);
+
+			// Append the rth character form the source list onto the target list
+			target[target.length] = source[r];
+
+			// Delete the rth character from the source list
+			var front = source.slice(0,r);
+			var back = source.slice(r+1);
+			source = front.concat(back);
+		}
+		
+		return target;
+	}
+	
+	
+////////////////////////////////////////////////////////////////////////////
+	function proceedScreen() {
+	//  Display the Click to Proceed screen
+		disableButtons();
+		this.document.questionPic.src = graphics["proceed.gif"].src;
+		this.document.answerPicA.src = graphics["spacer.gif"].src;
+		this.document.answerPicB.src = graphics["spacer.gif"].src;
+		this.document.answerPicC.src = graphics["spacer.gif"].src;
+		this.document.selectPicA.src = graphics["spacer.gif"].src;
+		this.document.selectPicB.src = graphics["spacer.gif"].src;
+		this.document.selectPicC.src = graphics["spacer.gif"].src;
+		this.document.okayPic.src = graphics["spacer.gif"].src;
+		this.document.exitPic.src = graphics["spacer.gif"].src;
+		this.document.skipPic.src = graphics["spacer.gif"].src;
+		this.document.tryagain.src = graphics["spacer.gif"].src;
+	}
+
+
+
+////////////////////////////////////////////////////////////////////////////
+	function blankScreen() {
+	//  Display blank screen
+		betweenQuestions = true;
+		disableButtons();
+		
+		// hide last image layer EW
+		 shuffle(newTop,'150','448','hidden');
+		
+		this.document.questionPic.src = graphics["spacer.gif"].src;
+		this.document.answerPicA.src = graphics["spacer.gif"].src;
+		this.document.answerPicB.src = graphics["spacer.gif"].src;
+		this.document.answerPicC.src = graphics["spacer.gif"].src;
+		this.document.selectPicA.src = graphics["spacer.gif"].src;
+		this.document.selectPicB.src = graphics["spacer.gif"].src;
+		this.document.selectPicC.src = graphics["spacer.gif"].src;
+		this.document.okayPic.src = graphics["spacer.gif"].src;
+		this.document.exitPic.src = graphics["spacer.gif"].src;
+		this.document.skipPic.src = graphics["spacer.gif"].src;
+		this.document.tryagain.src = graphics["spacer.gif"].src;
+	}
+
+
+
+////////////////////////////////////////////////////////////////////////////
+	function displayQuestion(retries) {
+	// Displays the images for the current question
+	// Will not display until all the question's images are preloaded
+	// Waits 500ms before trying again
+	// Accepts retries parameter which holds number of times the function has had to wait
+	// Opens error alert box after 120 unsuccessful attempts (1 minute),
+	// ... then tries for another minute, etc.
+	// When successful, displays question and preloads next question
+
+		if (currentQuestionInList==randomList.length) {
+			nextQuestion();
+			return;
+		}
+		
+		q = randomList[currentQuestionInList];
+
+		if (question[q].questionOutOf20 == -1) {
+		// This question has not yet been assigned a questionOutOf20 number
+			question[q].questionOutOf20 = questionOutOf20LoopIndex;
+			questionOutOf20LoopIndex++;
+		}
+		
+		// Are all the question's images ready?
+		var ready = true;
+		ready = ready && graphics["ans"+q+"a.gif"].complete
+		ready = ready && graphics["ans"+q+"b.gif"].complete
+		ready = ready && graphics["ans"+q+"c.gif"].complete
+		//ready = ready && graphics["ans"+q+"ah.gif"].complete
+		//ready = ready && graphics["ans"+q+"bh.gif"].complete
+		//ready = ready && graphics["ans"+q+"ch.gif"].complete
+		ready = ready && graphics["ques"+q+".gif"].complete
+		ready = ready && graphics["test"+question[q].subTestNum+".gif"].complete
+		ready = ready && graphics[question[q].questionOutOf20+".gif"].complete
+		
+		if (!ready) {
+		//  Images not ready
+			if (retries > 120) {
+			//  Has retried for 1 minute
+				alert("Error loading images.  Trying again...");
+				fetchQuestion(q);
+				window.setTimeout("displayQuestion(0)",500);
+				return;
+			}
+			
+			// Has not retried for 1 minute yet
+			// Increment retries parameter and wait another 500ms
+			var newtries = retries + 1;
+			newtries = newtries.toString();
+			window.setTimeout("displayQuestion(" + newtries + ")",500);
+			return;
+		}
+		
+		// Preload next question's images and the next digit for the score display
+		if (masterList[questionOutOf20LoopIndex] <= LastQuestion) {
+			fetchQuestion(masterList[questionOutOf20LoopIndex]);
+			add(questionOutOf20LoopIndex + ".gif");
+		}
+			
+		randomOptionList = makeRandomList(optionList);
+		
+		// No valid option selected yet
+		selectedNum = 4;
+		clearSelections();
+		this.document.okayPic.src = graphics["spacer.gif"].src;
+		this.document.exitPic.src = graphics["exit.gif"].src;
+		
+		
+		// Display question and the 3 options in random order
+		this.document.questionPic.src = graphics["ques" + q + ".gif"].src;
+		this.document.answerPicA.src = graphics["ans" + q + threeLetterList[randomOptionList[0]] + ".gif"].src;
+		this.document.answerPicB.src = graphics["ans" + q + threeLetterList[randomOptionList[1]] + ".gif"].src;
+		this.document.answerPicC.src = graphics["ans" + q + threeLetterList[randomOptionList[2]] + ".gif"].src;
+
+
+		// Display SKIP button if questions can be skipped
+		if (question[q].skipped) {
+			this.document.skipPic.src = graphics["spacer.gif"].src;
+			this.document.tryagain.src = graphics["spacer.gif"].src;
+		} else {
+			this.document.skipPic.src = graphics["skip.gif"].src;
+		}
+
+		// Display the Number of the current question (its position within the randomised test)
+		this.document.questionNumberPic.src = graphics[question[q].questionOutOf20%21 + ".gif"].src;
+
+		// Display the subtest heading for this question
+		this.document.subTestPic.src = graphics["test" + question[q].subTestNum + ".gif"].src;
+		
+
+		//  Display score
+		this.document.outOfPic.src = graphics["outof.gif"].src;
+		this.document.totalAttemptedNumberPic.src = graphics[totalAttempted + ".gif"].src;
+		this.document.scoreNumberPic.src = graphics[score + ".gif"].src;
+
+		// Display Graphics
+		
+		// Calculate picture x - position
+		// Width of question image (742) - (width of picture + 10)
+		
+		mLeft =  745 - picxposition[q];
+		
+		// alert (mLeft);
+		
+		// convert question number to text E.W.
+		textquestionnumber = "elem" + q;
+		
+		//alert (textquestionnumber);
+		
+		
+		
+		newTop = textquestionnumber;
+		shuffle(newTop,'150',mLeft,'visible');
+		
+		
+		betweenQuestions = false;
+		selectedYet = false;
+		enableButtons();
+
+		return;
+	}
+	
+////////////////////////////////////////////////////////////////////////////
+	function nextQuestion() {
+	// Display the next question
+	
+		if (currentQuestionInList < randomList.length-1) {
+		// We are not at the end of the current list
+		
+			currentQuestionInList++;
+		} else {
+		// We ARE at the end of the current list
+		
+			currentQuestionInList=0;
+			if (doingSkipped) {
+			// We have been doing the list of skipped questions
+			
+				// Reset state variable
+				doingSkipped=false;
+				// Move to next list
+				currentList++;
+				checkNoMoreLists();
+				randomList = lists[currentList];
+				
+				// Never show the Proceed to next section screen in new-look DDKT
+				//if ((currentList != 1) && (currentList != 4) && (currentList != LastList)) {
+				// We are not moving to or from an ICAC question, or between the traffic signs lists
+				
+					// Show the Click to Proceed screen
+					//proceeding = true;
+					//betweenQuestions = true;
+					//proceedScreen();
+					//return;
+				//} else {
+					// Don't show the Click to Proceed screen.  Move straight on.
+					proceeding = false;
+					disableButtons();
+					displayQuestion(0);
+					return;
+				//}
+			} else {
+			// We have NOT been doing the list of skipped questions
+				
+				// Do the skipped list now
+				doingSkipped=true;
+				randomList=skippedList;
+				skippedList=[];
+			}
+		}
+		
+		// Show the next question
+		displayQuestion(0);
+		return;
+	}
+	
+
+////////////////////////////////////////////////////////////////////////////
+	function displayResults() {
+		// Open results page in new window
+		var w = window.open("ddktrslt.htm", "ddktresult", "width=640,height=490");
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function checkNoMoreLists() {
+		if (currentList >= lists.length) {
+		// blank the next question button we are at the end E.W.
+		this.document.skipPic.src = graphics["spacer.gif"].src;
+			displayResults();
+		}
+	}
+	
+
+////////////////////////////////////////////////////////////////////////////
+	function doExit() {
+		if (betweenQuestions || !exitable) {return;}
+		displayResults();
+	}
+	
+////////////////////////////////////////////////////////////////////////////
+	function doSelect(x) {
+	// Select one of the three options
+	
+		if (x==selectedNum || x >= 3 || betweenQuestions) {
+		// Is not a valid selection, or is already selected
+			return;
+		}
+		
+		// Clear any previous selections
+		clearSelections();
+		
+		// Set state variables
+		selectedYet = true;
+		selectedNum = x;
+
+		if (question[q].skipped) {
+		//  The question CANNOT be skipped
+			this.document.skipPic.src = graphics["spacer.gif"].src;
+			this.document.tryagain.src = graphics["spacer.gif"].src;
+			this.document.okayPic.src = graphics["okay.gif"].src;
+		} else {
+		// The question CAN be skipped
+			this.document.skipPic.src = graphics["skip.gif"].src;
+		}
+		
+		//  Highlight selected option.  Uses images with "h.gif" suffix
+		switch (x) {
+			case 0:
+				this.document.selectPicA.src = graphics["selected.gif"].src;
+				//this.document.answerPicA.src = graphics["ans" + q + threeLetterList[randomOptionList[0]] + "h.gif"].src;
+				break;
+			case 1:
+				this.document.selectPicB.src = graphics["selected.gif"].src;
+				//this.document.answerPicB.src = graphics["ans" + q + threeLetterList[randomOptionList[1]] + "h.gif"].src;
+				break;
+			case 2:
+				this.document.selectPicC.src = graphics["selected.gif"].src;
+				//this.document.answerPicC.src = graphics["ans" + q + threeLetterList[randomOptionList[2]] + "h.gif"].src;
+				break;
+			default:
+				break;
+		}
+		
+		// Show Okay button		
+		this.document.okayPic.src = graphics["okay.gif"].src;
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function hover(x) {
+	// Select one of the three options
+		if (!(selectedYet) && (selectedNum != x) && !(nohover[x])) {
+			if (x >= 3) {
+			// Is not a valid selection, or is already selected
+				return;
+			}
+			
+			//  Highlight selected option.  Uses images with "h.gif" suffix
+			switch (x) {
+				case 0:
+					this.document.selectPicA.src = graphics["grey_button_down.gif"].src;
+					break;
+				case 1:
+					this.document.selectPicB.src = graphics["grey_button_down.gif"].src;
+					break;
+				case 2:
+					this.document.selectPicC.src = graphics["grey_button_down.gif"].src;
+					break;
+				default:
+					break;
+			}
+		}
+		
+		
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function unhover(x) {
+	// Select one of the three options
+	
+		if (!(selectedYet) && (selectedNum != x) && !(nohover[x])) {
+			if (x >= 3) {
+			// Is not a valid selection, or is already selected
+				return;
+			}
+			
+			//  Highlight selected option.  Uses images with "h.gif" suffix
+			switch (x) {
+				case 0:
+					this.document.selectPicA.src = graphics["noselect.gif"].src;
+					break;
+				case 1:
+					this.document.selectPicB.src = graphics["noselect.gif"].src;
+					break;
+				case 2:
+					this.document.selectPicC.src = graphics["noselect.gif"].src;
+					break;
+				default:
+					break;
+			}
+		}
+		
+		
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function clearSelections() {
+	
+		// Set state variables
+		selectedYet = false;
+		nohover[0] = false;
+		nohover[1] = false;
+		nohover[2] = false;
+
+		
+		// Clears any existing highlighting for a previously select option
+		switch (selectedNum) {
+			case 0:
+				this.document.selectPicA.src = graphics["noselect.gif"].src;
+				//this.document.answerPicA.src = graphics["ans" + q + threeLetterList[randomOptionList[0]] + ".gif"].src;
+				break;
+			case 1:
+				this.document.selectPicB.src = graphics["noselect.gif"].src;
+				//this.document.answerPicB.src = graphics["ans" + q + threeLetterList[randomOptionList[1]] + ".gif"].src;
+				break;
+			case 2:
+				this.document.selectPicC.src = graphics["noselect.gif"].src;
+				//this.document.answerPicC.src = graphics["ans" + q + threeLetterList[randomOptionList[2]] + ".gif"].src;
+				break;
+			default:
+				this.document.selectPicA.src = graphics["noselect.gif"].src;
+				//this.document.answerPicA.src = graphics["ans" + q + threeLetterList[randomOptionList[0]] + ".gif"].src;
+				this.document.selectPicB.src = graphics["noselect.gif"].src;
+				//this.document.answerPicB.src = graphics["ans" + q + threeLetterList[randomOptionList[1]] + ".gif"].src;
+				this.document.selectPicC.src = graphics["noselect.gif"].src
+				//this.document.answerPicC.src = graphics["ans" + q + threeLetterList[randomOptionList[2]] + ".gif"].src;
+				break;
+		}			
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function showInSelect(x, imageName) {
+	// Shows an image (imageName) in the Select box of option x
+	
+		switch (x) {
+			case 0:
+				this.document.selectPicA.src = graphics[imageName].src;
+				break;
+			case 1:
+				this.document.selectPicB.src = graphics[imageName].src;
+				break;
+			case 2:
+				this.document.selectPicC.src = graphics[imageName].src;
+				break;
+			default:
+				break;
+		}
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function showCorrect(x) {
+		showInSelect(x, "correct.gif")
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function showWrong(x) {
+		showInSelect(x, "wrong.gif")
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function showArrow(x) {
+		showInSelect(x, "arrow.gif")
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function doOkay() {
+							
+		if (proceeding || !okayable) {
+		// Can't accept Okay
+			return;
+		}
+		
+/////////////////////////////////////////////////////////////////////////////		
+		
+		
+
+		
+////////////////////////////////////////////////////////////////		
+		
+		
+		
+		
+		
+		
+		
+		if (betweenQuestions) {
+		// Has already chosen and confirmed incorrect answer
+		// Clicked the NextQuestion button
+			disableButtons();
+			setTimeout("blankScreen()", 100);
+			setTimeout("nextQuestion()", 1100);
+			return;
+		}
+		
+
+		
+		
+		
+		if (!selectedYet) {
+		// Hasn't selected any answer yet
+			return;
+		}
+		
+		betweenQuestions = true;
+		
+		if (!question[q].repeatable) {
+		//  This question is not a RepeatUntilCorrect question
+			
+			// Increment the "out of' values for whole test and subtest
+			totalAttempted++;
+			testOutOf[question[q].subTestNum]++;
+		}
+		
+		// Blank the Skip and Exit buttons
+		this.document.exitPic.src = graphics["spacer.gif"].src;
+		this.document.skipPic.src = graphics["spacer.gif"].src;
+
+		thisNum = selectedNum;
+		selectedNum = 4;
+
+		if (randomOptionList[thisNum] == 0) {
+		// Process correct answer
+		
+			if (!question[q].repeatable) {
+			// Question is not RepeatUntilCorrect
+			
+				// Increment total score and subtest score
+				score++;
+				testScore[question[q].subTestNum]++;
+			}
+			
+			// Display green tick for correct answer
+			showCorrect(thisNum);
+			
+			// Blank the Okay button
+			// this.document.okayPic.src = graphics["spacer.gif"].src;
+	// modification		
+	
+		
+	seeokqbutton = document.okayPic.src;
+	iseeokqbutton = seeokqbutton.indexOf("okay.gif");
+	if (iseeokqbutton > -1) {
+	this.document.okayPic.src = graphics["spacer.gif"].src;
+	document.okayPic.src = "next.gif";
+	return;
+	} 
+
+
+//  switch to Next button but only if we can see the OK button
+	
+    seeokqbutton = document.okayPic.src;
+    iseeokqbutton = seeokqbutton.indexOf("ok_button_down_en.gif");
+	if (iseeokqbutton > -1) {
+	this.document.okayPic.src = graphics["spacer.gif"].src;
+	document.skipPic.src = "next.gif";
+	return;
+	}
+	
+						
+    // end modification
+
+			// Blanks screen for 1 second then show next question
+			disableButtons();
+			setTimeout("blankScreen()", 1000);
+			setTimeout("nextQuestion()", 2000);
+			return;
+
+		} else {
+		// Incorrect answer
+		
+			// Show red cross for incorrect answer
+			showWrong(thisNum);
+			if (question[q].repeatable) {
+			// Question is RepeatUntilCorrect
+			
+				// Show "Try Again" in skip place
+				this.document.skipPic.src = graphics["spacer.gif"].src;
+				this.document.tryagain.src = graphics["tryagain.gif"].src;
+
+				// Blank Okay button
+				this.document.okayPic.src = graphics["spacer.gif"].src;
+
+				nohover[thisNum]=true;
+				selectedYet = false;
+				betweenQuestions = false;
+				exitable = false;
+			} else {
+			// Question is not RepeatUntilCorrect
+			
+				// Show blue arrow on correct answer
+				for (var x=0; x<3 ; x++) {
+					if (randomOptionList[x] == 0) {showArrow(x);}
+				}
+				
+				// Show "Next Question" in Skip space
+				this.document.skipPic.src = graphics["next.gif"].src;
+				// Blank out OK button in OK space because Next Question button now invokes OK instead
+				this.document.okayPic.src = graphics["spacer.gif"].src;
+			}
+		}
+	}
+
+
+
+////////////////////////////////////////////////////////////////////////////
+	function doProceed() {
+	// Happens whenever we click in the Question image
+	// Returns without doing anything unless the 'proceeding' var is true
+		
+		if (proceeding) {
+		// This is a Click to Proceed page
+		
+			// Reset proceeding var to false
+			proceeding = false;
+			
+			// Blank screen for 1 second, then show next question
+			disableButtons();
+			setTimeout("blankScreen()", 100);
+			setTimeout("displayQuestion(0)", 1100);
+			return;
+		}
+	}
+
+
+
+////////////////////////////////////////////////////////////////////////////
+	function doSkip() {
+	
+	// Modification  EW 28-June-2001
+	// if the next button is displaying in this position then doOK()
+	// because this is not a skip action
+	
+	// If the last question can be seen AND the next button can be seen then we are at  
+	// the end and we must we must blank and disable the buttons and display the results
+
+	seelastquestionpic = document.questionPic.src;
+	iseelastquestionpic = seelastquestionpic.indexOf("ques21.gif");
+	
+	//alert(seelastquestionpic + " " + iseelastquestionpic);
+	if (iseelastquestionpic > -1) {
+	disableButtons();
+	this.document.skipPic.src = graphics["spacer.gif"].src;
+	this.document.okayPic.src = graphics["spacer.gif"].src;
+	displayResults();
+	return;
+	} 
+	
+	seenextqbutton = document.skipPic.src;
+	iseenextqbutton = seenextqbutton.indexOf("next");
+	
+	if (iseenextqbutton > -1) {
+	doOkay();
+	return;
+	} 
+
+	
+	seenextqbutton = document.skipPic.src;
+	iseenextqbutton = seeokqbutton.indexOf("next_button_down_en.gif");
+	if (iseenextqbutton > -1) {
+	doOkay();
+	return;
+	} 
+	
+	// Otherwise drop through and perform the skip functions
+	
+		if (!skipable || betweenQuestions || question[q].skipped) {
+		// Can't skip
+			return;
+		}
+		
+		disableButtons();
+
+		question[q].skipped = true;
+		
+		// Append question to skipped list
+		skippedList[skippedList.length] = q;
+
+		// Blank screen for 1 second, then show next question
+		setTimeout("blankScreen()", 100);
+		setTimeout("nextQuestion(0)", 1100);
+		return;
+	}
+
+
+
+////////////////////////////////////////////////////////////////////////////
+	function disableButtons() {
+		skipable = false;
+		okayable = false;
+		exitable = false;
+		return;
+	}
+
+
+
+////////////////////////////////////////////////////////////////////////////
+	function enableButtons() {
+		skipable = true;
+		okayable = true;
+		exitable = true;
+		return;
+	}
+
+
+////////////////////////////////////////////////////////////////////////////
+	function randInt(x) {
+	// Returns a random integer from 0 to (x-1)
+		return Math.round((Math.random() * x) - 0.5);
+	}
+	
+////////////////////////////////////////////////////////////////////////////
+
+
+
+	
+		 
+
+//-->
+</SCRIPT>
+
+	  
+<html>
+<head>
+<title>Driver Knowledge Test</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" content-language="en">
+</head>
+
+<body LEFTMARGIN=4 TOPMARGIN=2 MARGINHEIGHT=2 MARGINWIDTH=4 link="#CCCCCC" vlink="#CCCCCC" bgcolor="#CCCCCC" background="back.gif" OnLoad="runDDKT();">
+	<SPAN ID="elem21"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146"  height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+	<SPAN ID="elem20"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "156"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic20.gif" width=146 height=158 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+	<SPAN ID="elem19"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "156"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic19.gif" width=146 height=159 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+	<SPAN ID="elem18"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "156"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic18.gif" width=146 height=161 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+	<SPAN ID="elem17"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "155"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic17.gif" width=145 height=141 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+	<SPAN ID="elem16"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "111"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic16.gif" width=101 height=150 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+	<SPAN ID="elem15"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "218"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic15.gif" width=208 height=119 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+	<SPAN ID="elem14"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146"  height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+	<SPAN ID="elem13"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146"  height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+	<SPAN ID="elem12"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146"  height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+	<SPAN ID="elem11"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "100"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic11.gif" width=90 height=167 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem10"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "175"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic10.gif" width=165 height=176 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem9"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146"  height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem8"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "121"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic8.gif" width=111 height=151 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem7"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146"  height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem6"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146"  height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem5"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146"  height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem4"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146"  height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem3"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146"  height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem2"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "138"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic2.gif" width=128 height=259 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem1"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "239"  height = "264" background="back.gif"><TR><td align="RIGHT"><img src="pic1.gif" width=229 height=127 border=0 alt=""></TD></TR></TABLE></SPAN>
+	
+	<SPAN ID="elem0"><TABLE border = "0" cellspacing="0" cellpadding="0" width = "146" height = "264"><TR><td align="RIGHT"><img src="spacer.gif" width=136 height=149 border=0 alt=""></TD></TR></TABLE></SPAN>
+
+<span id = "elemlast">
+</span>
+
+<table border="0" cellpadding="0" cellspacing="0" width="750" align="center">
+	<tr><td width="100%">
+  	<table border="0" cellpadding="0" cellspacing="0" width="750" background="back_textured.gif">
+  
+    <!-- Information block -->
+    <tr valign="top">
+      <td width="10%" > 
+        <img src="rtalogo.gif" height = "77" width = "81" alt=""> 
+      </td>
+      <td width="30%">
+  <IMG SRC="cartest.gif" BORDER=0 WIDTH=200 HEIGHT=15><BR><IMG SRC="spacer.gif" BORDER=0 WIDTH=200 HEIGHT=15 NAME="subTestPic">
+      </td>
+      <td width="20%">&nbsp;</td>
+      <td width="40%">
+  <IMG SRC="qstnlbl.gif" BORDER=0 WIDTH=200 HEIGHT=15><IMG SRC="spacer.gif" BORDER=0 WIDTH=15 HEIGHT=15><IMG SRC="spacer.gif" BORDER=0 WIDTH=15 HEIGHT=15 NAME="questionNumberPic"><BR><IMG SRC="score.gif" BORDER=0 WIDTH=200 HEIGHT=15 NAME="scoreLabelPic"><IMG SRC="spacer.gif" BORDER=0 WIDTH=15 HEIGHT=15 NAME="scoreNumberPic"><IMG SRC="spacer.gif" BORDER=0 WIDTH=15 HEIGHT=15 NAME="outOfPic"><IMG SRC="spacer.gif" BORDER=0 WIDTH=15 HEIGHT=15 NAME="totalAttemptedNumberPic">
+      </td>
+    </tr>
+  </table>
+  <table border="0" cellpadding="0" cellspacing="0" width="750" bgcolor="#FFFFCC">
+    <!-- Question block -->
+    <tr>
+      <td width="100%">
+        <img src="yellow_line.gif" width="750" height="14" border="0" alt="">
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="100%" valign="middle" align="left" dir="ltr">
+<A HREF="javascript: void 0;" ONCLICK="doProceed();return false;" ONFOCUS="this.blur();"><IMG SRC="question.gif" NAME="questionPic" WIDTH=742 HEIGHT=43 BORDER=0>
+      </td>
+    </tr>
+  </table>
+  <table border="0" cellpadding="0" cellspacing="0" width="750" background="back.gif">
+    <!-- Answer block -->
+	
+    <tr>
+      <td width="5%" ><IMG SRC="spacer.gif"  width="15" height="1" BORDER=0 VSPACE=1></td>
+      <!-- First answer -->
+      
+      <td width="15%"><A HREF="javascript: void 0" ONCLICK="doSelect(0);return false" ONFOCUS="this.blur();"  onMouseOver="hover(0);return false;" onMouseOut="unhover(0);return false;"><IMG SRC="spacer.gif" WIDTH=163 HEIGHT=65 NAME="selectPicA" BORDER=0 VSPACE=1 ALIGN="MIDDLE"></A>
+      </td>
+	  
+	  <td width="80%" valign ="middle" dir="ltr" align="left">
+		<IMG SRC="spacer.gif" WIDTH="547" HEIGHT="72" NAME="answerPicA" BORDER="0" VSPACE="1" ALIGN="MIDDLE" ALT="">
+	  </td>
+    </tr>
+  </table>
+  
+  <!-- Answer separator -->
+  <table border="0" cellpadding="0" cellspacing="0" width="750" background="back.gif">
+    <tr>
+      <td width="100%"  align = "left" height="22">
+        <hr>
+      </td>
+    
+    </tr>
+  </table>
+
+  <table border="0" cellpadding="0" cellspacing="0" width="750" background="back.gif">
+    <!-- Second answer-->
+    <tr>
+      <td width="5%"><IMG SRC="spacer.gif"  width="15" height="1" BORDER=0 VSPACE=1></td>
+      <td width="15%"><A HREF="javascript: void 0" ONCLICK="doSelect(1);return false" ONFOCUS="this.blur();"  onMouseOver="hover(1);return false;" onMouseOut="unhover(1);return false;"><IMG SRC="spacer.gif" WIDTH=163 HEIGHT=65 NAME="selectPicB" BORDER=0 VSPACE=1 ALIGN="MIDDLE"></A></td>
+      <td width="80%" valign ="middle" dir="ltr" align="left">
+       
+            <IMG SRC="spacer.gif" WIDTH=547 HEIGHT=72 NAME="answerPicB" BORDER=0 VSPACE=1 ALIGN="MIDDLE">
+       
+      </td>
+    </tr>
+  </table>
+
+  <!-- Answer separator -->
+  <table border="0" cellpadding="0" cellspacing="0" width="750" background="back.gif">
+    <tr>
+      <td width="100%"  align = "left" height="22">
+        <hr>
+      </td>    
+    </tr>
+  </table>
+
+  <!-- Third Answer -->
+  <table border="0" cellpadding="0" cellspacing="0" width="750" background="back.gif">
+    <tr>
+      <td width="5%"><IMG SRC="spacer.gif"  width="15" height="1" BORDER=0 VSPACE=1></td>
+      <td width="15%"><A HREF="javascript: void 0" ONCLICK="doSelect(2);return false" ONFOCUS="this.blur();"  onMouseOver="hover(2);return false;" onMouseOut="unhover(2);return false;"><IMG SRC="spacer.gif" WIDTH=163 HEIGHT=65 NAME="selectPicC" BORDER=0 VSPACE=1 ALIGN="MIDDLE"></A>
+      </td>
+      <td width="80%" valign ="middle" dir="ltr" align="left">
+		<IMG SRC="spacer.gif" WIDTH=547 HEIGHT=72 NAME="answerPicC" BORDER=0 VSPACE=1 ALIGN="MIDDLE">
+      </td>
+    </tr>
+  </table>
+
+  <table border="0" cellpadding="0" cellspacing="0" width="750" background="back_textured2.gif">
+  <tr><IMG SRC="spacer.gif"  width="12" height="10" BORDER=0 VSPACE=1></tr>  
+    <tr valign="middle">
+
+      <!-- Speaker image 
+      <td width="10%">
+        <a href="javascript:;">
+          <img src="spacer.gif" width="76" height="68" border="0"  alt="">
+        </a>
+      </td>-->
+
+      <td width="3%"><IMG SRC="spacer.gif"  width="12" height="1" BORDER=0 VSPACE=1></td>
+
+      <!-- Exit button -->
+      <td width="20%">
+  		<A HREF="javascript: void 0" ONCLICK="doExit();return false" ONFOCUS="this.blur();" onMouseOver="seeexitbutton();" onMouseOut="seeexitbuttonout();"><IMG SRC="spacer.gif" WIDTH=148 HEIGHT=56 NAME="exitPic" BORDER=0 VSPACE=1></A>
+      </td>
+      <td width="10%">&nbsp;</td>
+
+      <!-- Skip button -->
+      <td width="20%">
+		<A HREF="javascript: void 0" ONCLICK="doSkip();return false" ONFOCUS="this.blur();" onMouseOver="seeskipornextbutton();" onMouseOut="seeskipornextbuttonout();"><IMG SRC="spacer.gif" WIDTH=163 HEIGHT=65 NAME="skipPic" BORDER=0 VSPACE=1></A>
+      </td>
+      <td width="10%">&nbsp;</td>
+
+      <!-- OK Button -->
+      <td width="20%">
+		<A HREF="javascript: void 0" ONCLICK="doOkay();return false" ONFOCUS="this.blur();" onMouseOver="seeokbutton();" onMouseOut="seeokbuttonout();"><IMG SRC="spacer.gif" WIDTH=163 HEIGHT=65 NAME="okayPic" BORDER=0 VSPACE=1></A>
+		</td>
+    </tr>
+  </table>
+    
+  <table border="0" cellpadding="0" cellspacing="0" width="750" background="back_textured2.gif">
+    <tr valign = "top">
+      <td width="100%" align="center">
+          <IMG SRC="spacer.gif"  NAME="tryagain" width="404" height="21" BORDER=0 VSPACE=1>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td width="100%">
+        <img src="horizontal_line6.gif" width="750" height="12" border="0" alt="">
+      </td>
+    </tr> 
+  </table>
+  
+  
+</td>
+</tr>
+</table>
+</body>
+</html>
+

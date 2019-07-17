@@ -1,0 +1,83 @@
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+	var roadSafetyScore = 0;
+	var roadSafetyOutOf = 0;
+	
+	for (var i=2;i<=9;i++) {
+		roadSafetyScore += opener.testScore[i];
+		roadSafetyOutOf += opener.testOutOf[i];
+	}
+
+	var trafficSignsScore = 0;
+	var trafficSignsOutOf = 0;
+	
+	for (i=10;i<=11;i++) {
+		trafficSignsScore += opener.testScore[i];
+		trafficSignsOutOf += opener.testOutOf[i];
+	}
+//-->
+</SCRIPT>
+
+<HTML>
+<HEAD>
+<TITLE>Demonstration Driver Knowledge Test - Results Screen</TITLE>
+</HEAD>
+<BODY BGCOLOR="#CCCCCC" BACKGROUND="back_textured2.gif" LEFTMARGIN=4 TOPMARGIN=2 MARGINHEIGHT=2 MARGINWIDTH=4>
+
+<CENTER>
+<B><IMG SRC="rtalogo.gif" ALIGN=center><FONT FACE="sans-serif" SIZE=+3>Roads and Traffic Authority&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT><BR>
+<FONT FACE="sans-serif" SIZE=+1>Results Screen</FONT></B>
+</CENTER><P>
+<TABLE BORDER=1>
+<TR>
+<TD WIDTH=50% VALIGN=middle ALIGN=center>
+	<TABLE BORDER=1 CELLSPACING=4 CELLPADDING=0>
+		<TR>
+			<TD><TABLE><TR><TD WIDTH=250><FONT FACE="sans-serif" SIZE=+2><B>General Knowledge</TD><TD ALIGN=right><FONT FACE="sans-serif" SIZE=+2><B><SCRIPT>document.write(opener.testScore[1], "/", opener.testOutOf[1])</SCRIPT></TD></TR></TABLE>
+			</TD>
+		</TR>
+		<TR>
+			<TD><TABLE><TR><TD WIDTH=250><FONT FACE="sans-serif" SIZE=+2><B>Road Safety</TD><TD ALIGN=right><FONT FACE="sans-serif" SIZE=+2><B><SCRIPT>document.write(roadSafetyScore, "/", roadSafetyOutOf)</SCRIPT></TD></TR></TABLE>
+				<SCRIPT>
+					for (i=2;i<=9;i++) {
+						document.write("<IMG SRC=test", i, ".gif><IMG SRC=", opener.testScore[i], ".gif><IMG SRC=outof.gif><IMG SRC=", opener.testOutOf[i], ".gif><BR>");
+					}
+				</SCRIPT>
+			</TD>
+		</TR>
+		<TR>
+			<TD><TABLE><TR><TD WIDTH=250><FONT FACE="sans-serif" SIZE=+2><B>Traffic Signs</TD><TD ALIGN=right><FONT FACE="sans-serif" SIZE=+2><B><SCRIPT>document.write(trafficSignsScore, "/", trafficSignsOutOf)</SCRIPT></TD></TR></TABLE>
+				<SCRIPT>
+					for (i=10;i<=11;i++) {
+						document.write("<IMG SRC=test", i, ".gif><IMG SRC=", opener.testScore[i], ".gif><IMG SRC=outof.gif><IMG SRC=", opener.testOutOf[i], ".gif><BR>");
+					}
+				</SCRIPT>
+			</TD>
+		</TR>
+	</TABLE>
+</TD>
+<TD WIDTH=50%>
+	<TABLE BORDER=0 CELLSPACING=4 CELLPADDING=4>
+		<TR>
+			<TD><FONT FACE="sans-serif" SIZE=-1>In the actual Driver Knowledge Test (DKT), the computer will randomly select 45 questions for you from a question bank of a couple of hundred.  There are three sections:
+<OL>
+<LI>General Driver Knowledge - 15 questions
+<LI>Road Safety - 20 questions
+<LI>Road Signs - 10 questions
+</OL>
+You must get at least 12/15 questions correct (not more than 3 wrong) in the General Driver Knowledge section and you must get at least 29/30 questions correct (not more than 1 wrong) in the combined Road Safety and Road Signs sections.
+			</TD>
+		</TR>
+	</TABLE>
+</TD>
+</TR>
+</TABLE>
+
+</BODY>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+	// Close the DDKT window
+	opener.close();
+//-->
+</SCRIPT>
+</HTML>
