@@ -16,7 +16,7 @@ To run the Demonstration Test:
 to the Internet);
  2) Point it to the Demonstration Test
 directory on your computer;
- 3) Open the file called "intro.htm"
+ 3) Open the file called "ddkt.htm"
 
 NOTE:
 You will need a recent-version web browser in order to run
@@ -25,4 +25,4 @@ Netscape 4.06 onwards, and Microsoft Internet Explorer 5 onwards.
 These and other browsers are available for free download from
 the manufacturers’ web-sites. 
 
-© Roads and Traffic Authority (NSW), 27 June 2001
+© Roads and Traffic Authority (NSW), 02 December 1999
