@@ -7,9 +7,9 @@ This was the actual page/app used by many thousands of Australians when practisi
 
 The page/app was a simulation of the mainframe application, with a dedicated touchscreen interface, that was used in NSW Motor Registries to administer the actual test.
 
-This version fom 1999 was written by Lee Borkman in pure JavaScript. It's essentially a Single Page Application using 100% images in a fixed layout to implement the test interface, and replicating the substantial business logic used in the real test.
+This 1999 app was written by Lee Borkman in pure JavaScript. It's essentially a Single Page Application using 100% images in a fixed layout to implement the test interface, and replicating the substantial business logic used in the real test.
 
-This 1999 JavaScript app does start up and run in modern browsers, so here it is, an historical curiosity at very least.
+This 1999 JavaScript app does start up and run in modern browsers, so here it is, an historical curiosity if nothing more.
 
 To run the app, simply open "ddkt.htm" in  a browser, and click "Run the Demonstration Test"
 
