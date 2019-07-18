@@ -1,7 +1,7 @@
 # driver-knowledge-test
 Original 1999 pure-javascript Demonstration Driver Knowledge Test, as used by the Roads and Traffic Authority of NSW. Uploaded here for posterity's sake, and as a demonstration of ancient technology ;-)
 
-YOu can see it running at http://bjork.net/ddkt/ddkt.htm (click on "Run the Demonstration Test")
+You can see it running at http://bjork.net/ddkt/ddkt.htm (click on "Run the Demonstration Test")
 
 This was the actual page/app used by many thousands of Australians when practising for the Driver Knowledge Test in order to get the Learner's Licence. Users could run the test online, or download the complete ZIP and run it on their own machines. (See https://web.archive.org/web/20020403091023/http://www.rta.nsw.gov.au/licensing/ae11_c.htm)
 
