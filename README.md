@@ -1,7 +1,10 @@
+
 # driver-knowledge-test
 Original 1999 pure-javascript Demonstration Driver Knowledge Test, as used by the Roads and Traffic Authority of NSW. Uploaded here for posterity's sake, and as a demonstration of ancient technology ;-)
 
-**NOTE: this code is copyright:  © Roads and Traffic Authority (NSW), 02 December 1999**
+**NOTE: this code is copyright:  © Roads and Traffic Authority (NSW), 02 December 1999**  
+
+**NOTE 2: *The Roads and Traffic Authority* no longer exists. It was merged into *Roads and Maritime Services* several years ago, and now *Roads and Maritime Services* has been absorbed into *Transport New South Wales***
 
 You can see it running at http://bjork.net/ddkt/ddkt.htm (click on "Run the Demonstration Test")
 
@@ -17,7 +20,7 @@ This 1999 code does still start up and run in modern browsers, so here it is, an
 
 To run the app, simply open "ddkt.htm" in  a browser, and click "Run the Demonstration Test"
 
-With thanks to the (former) Roads and Traffic Authority of New South Wales.
+With thanks to the (former) Roads and Traffic Authority of New South Wales.  
 Lee Borkman
 
 
